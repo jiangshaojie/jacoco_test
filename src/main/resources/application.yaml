@@ -1,0 +1,77 @@
+server:
+  port: 8093
+spring:
+  application:
+    name: performance-platform
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:C:\sqlite\performance.db
+    username:
+    password:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  ### sqlite需要自己配置连接方式
+#  jpa:
+#    database-platform: com.laiye.performance.config.SQLiteDialect #自己配置的方言
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+#  thymeleaf:
+#    cache: false
+#  devtools:
+#    livereload:
+#      enabled: true
+logging:
+  file:
+    path: logs
+  level:
+    com.laiye.performance.dao: debug
+jmeter:
+  binPath: C:/software/apache-jmeter-5.1/bin/jmeter.bat
+---
+spring:
+  profiles: test
+mage:
+  ocr:
+    bills:
+      url: https://mage.uibot.com.cn/v1/mage/ocr/bills
+      privateDeploymentGpu:
+        pubkey: yE5wZQcSdpB7pwytxtPATBgK
+        secret: X3X3HJqEbTMKjFAWfmTjyF8N0iP0VhWt
+      privateDeploymentCpu:
+        pubkey: RTW5qQXTshZWjQdtQKYH8rbq
+        secret: pCBEjgBmy6LqQ9tEVV7mMaFCDwzTZ9jU
+      publicCloud:
+        pubkey: ss
+        secret: dd
+
+---
+
+spring:
+  profiles: prod
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:performance.db
+    username:
+    password:
+jmeter:
+  binPath: /data/apache-jmeter-5.1/bin/jmeter
+logging:
+  file:
+    path: logs
+  level:
+    com.laiye.performance.dao: info
+
+---
+
+spring:
+  profiles: mac
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:/Users/jiangshaojie/sqlite/performance.db
+    username:
+    password:
+jmeter:
+  binPath: /Users/jiangshaojie/Documents/apache-jmeter-5.1/bin/jmeter

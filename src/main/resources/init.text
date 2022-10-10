@@ -1,0 +1,371 @@
+create table case_plan
+(
+    id            INTEGER       not null
+        primary key autoincrement,
+    name          NVARCHAR(100) not null,
+    project_name  text          not null,
+    business_name text,
+    cases_ids     text,
+    create_time   text,
+    update_time   text
+);
+
+create table case_result
+(
+    id            INTEGER  not null
+        primary key autoincrement,
+    case_uuid     CHAR(32) not null,
+    task_uuid     char(32) not null,
+    result_csv    text,
+    result_log    text,
+    update_time   text     not null,
+    overview_data text,
+    state         VARCHAR(10)
+);
+
+create table case_result_history
+(
+    id            INTEGER  not null
+        primary key autoincrement,
+    case_uuid     CHAR(32) not null,
+    task_uuid     char(32) not null,
+    result_csv    text,
+    result_log    text,
+    update_time   text     not null,
+    overview_data text,
+    state         VARCHAR(10)
+);
+
+create table cases
+(
+    id            INTEGER       not null
+        primary key autoincrement,
+    name          NVARCHAR(100) not null,
+    jmx_uuid      CHAR(32)      not null,
+    config        text          not null,
+    uuid          char(32)      not null,
+    update_time   text          not null,
+    project_name  text,
+    business_name text,
+    create_time   text
+);
+
+create table jmx_file_description
+(
+    id            INTEGER       not null
+        primary key autoincrement,
+    name          NVARCHAR(100) not null,
+    uuid          CHAR(32)      not null,
+    content       TEXT,
+    project_name  text,
+    business_name text,
+    update_time   text default 0 not null
+);
+
+create table project_management
+(
+    id            INTEGER       not null
+        primary key autoincrement,
+    name          NVARCHAR(100) not null,
+    business_name NVARCHAR(100)
+);
+
+create table resources_folder
+(
+    id            INTEGER       not null
+        primary key autoincrement,
+    name          NVARCHAR(100) not null,
+    project_name  TEXT          not null,
+    business_name TEXT,
+    update_time   text          not null
+);
+create table taskstate
+(
+    id          INTEGER     not null
+        primary key autoincrement,
+    task_uuid   CHAR(32)    not null,
+    state       VARCHAR(10) not null,
+    update_time VARCHAR(20) not null
+);
+
+create table test_data_record
+(
+    id           INTEGER       not null
+        primary key autoincrement,
+    data_name    NVARCHAR(100) not null,
+    type         VARCHAR(10)   not null,
+    project_name NVARCHAR(100),
+    update_time text
+);
+
+create table case_result_history
+(
+    id            INTEGER  not null
+        primary key autoincrement,
+    case_uuid     CHAR(32) not null,
+    task_uuid     char(32) not null,
+    result_csv    text,
+    result_log    text,
+    update_time   text     not null,
+    overview_data text,
+    state         VARCHAR(10),
+    create_time   text
+);
+
+//待变更sql
+create table plan_task_record
+(
+    id            INTEGER  not null
+        primary key autoincrement,
+    task_id     CHAR(32) ,
+    plan_id varchar(32),
+    update_time   char(32),
+    state char(32),
+    execution_completion_time char(32)
+
+);
+
+
+alter table case_result add create_time text; //暂时不需要添加sql
+
+alter table case_result_history add create_time text; //暂时不需要添加sql
+
+alter table project_management
+    add category varchar(100);
+
+alter table case_result_history
+    add plan_task_id char(32);
+
+alter table case_result
+    add plan_task_id char(32);
+alter table case_plan
+    add params text;
+
+
+  create table tag
+(
+    id            INTEGER       not null
+        primary key autoincrement,
+    name   NVARCHAR(100) not null,
+    project_management_id INTEGER not null
+);
+
+
+alter table cases
+    add tag_id integer;
+
+
+create table cases_dg_tmp
+(
+    id            INTEGER       not null
+        primary key autoincrement,
+    name          NVARCHAR(100) not null,
+    jmx_uuid      CHAR(32)      not null,
+    config        text          not null,
+    uuid          char(32)      not null,
+    update_time   text          not null,
+    project_name  text,
+    business_name text,
+    create_time   text,
+    tag_id        text
+);
+
+insert into cases_dg_tmp(id, name, jmx_uuid, config, uuid, update_time, project_name, business_name, create_time,
+                         tag_id)
+select id,
+       name,
+       jmx_uuid,
+       config,
+       uuid,
+       update_time,
+       project_name,
+       business_name,
+       create_time,
+       tag_id
+from cases;
+
+drop table cases;
+
+alter table cases_dg_tmp
+    rename to cases;
+
+
+
+insert into project_management (name, category)
+values ('ocr','project');
+insert into project_management (name, category)
+values ('chatbot','project');
+insert into project_management (name, category)
+values ('IDP','project');
+
+
+alter table cases
+    add project_name_id integer;
+
+alter table cases
+    add business_name_id integer;
+
+alter table case_plan
+    add project_name_id integer;
+
+alter table case_plan
+    add business_name_id integer;
+
+alter table test_data_record
+    add project_name_id integer;
+
+alter table jmx_file_description
+ add project_name_id integer;
+
+alter table jmx_file_description
+ add business_name_id integer;
+
+ ***变更case tag类型
+
+ create table cases_dg_tmp
+ (
+     id               INTEGER       not null
+         primary key autoincrement,
+     name             NVARCHAR(100) not null,
+     jmx_uuid         CHAR(32)      not null,
+     config           text          not null,
+     uuid             char(32)      not null,
+     update_time      text          not null,
+     project_name     text,
+     business_name    text,
+     create_time      text,
+     tag_id           text,
+     project_name_id  integer,
+     business_name_id integer
+ );
+
+ insert into cases_dg_tmp(id, name, jmx_uuid, config, uuid, update_time, project_name, business_name, create_time,
+                          tag_id, project_name_id, business_name_id)
+ select id,
+        name,
+        jmx_uuid,
+        config,
+        uuid,
+        update_time,
+        project_name,
+        business_name,
+        create_time,
+        tag_id,
+        project_name_id,
+        business_name_id
+ from cases;
+
+ drop table cases;
+
+ alter table cases_dg_tmp
+     rename to cases;
+
+
+***case tag变更完成
+
+***0713***
+
+create table test_data_record_dg_tmp
+(
+    id              INTEGER       not null
+        primary key autoincrement,
+    data_name       NVARCHAR(100) not null,
+    type            VARCHAR(10)   not null,
+    update_time     text,
+    project_name_id integer
+);
+
+insert into test_data_record_dg_tmp(id, data_name, type, update_time, project_name_id)
+select id, data_name, type, update_time, project_name_id
+from test_data_record;
+
+drop table test_data_record;
+
+alter table test_data_record_dg_tmp
+    rename to test_data_record;
+
+create table case_plan_dg_tmp
+(
+    id               INTEGER       not null
+        primary key autoincrement,
+    name             NVARCHAR(100) not null,
+    cases_ids        text,
+    create_time      text,
+    update_time      text,
+    params           text,
+    project_name_id  integer,
+    business_name_id integer
+);
+
+insert into case_plan_dg_tmp(id, name, cases_ids, create_time, update_time, params, project_name_id, business_name_id)
+select id,
+       name,
+       cases_ids,
+       create_time,
+       update_time,
+       params,
+       project_name_id,
+       business_name_id
+from case_plan;
+
+drop table case_plan;
+
+alter table case_plan_dg_tmp
+    rename to case_plan;
+
+create table cases_dg_tmp
+(
+    id               INTEGER       not null
+        primary key autoincrement,
+    name             NVARCHAR(100) not null,
+    jmx_uuid         CHAR(32)      not null,
+    config           text          not null,
+    uuid             char(32)      not null,
+    update_time      text          not null,
+    create_time      text,
+    tag_id           integer,
+    project_name_id  integer,
+    business_name_id integer
+);
+
+insert into cases_dg_tmp(id, name, jmx_uuid, config, uuid, update_time, create_time, tag_id, project_name_id,
+                         business_name_id)
+select id,
+       name,
+       jmx_uuid,
+       config,
+       uuid,
+       update_time,
+       create_time,
+       tag_id,
+       project_name_id,
+       business_name_id
+from cases;
+
+drop table cases;
+
+alter table cases_dg_tmp
+    rename to cases;
+
+create table jmx_file_description_dg_tmp
+(
+    id               INTEGER       not null
+        primary key autoincrement,
+    name             NVARCHAR(100) not null,
+    uuid             CHAR(32)      not null,
+    content          TEXT,
+    update_time      text default 0 not null,
+    project_name_id  integer,
+    business_name_id integer
+);
+
+insert into jmx_file_description_dg_tmp(id, name, uuid, content, update_time, project_name_id, business_name_id)
+select id, name, uuid, content, update_time, project_name_id, business_name_id
+from jmx_file_description;
+
+drop table jmx_file_description;
+
+alter table jmx_file_description_dg_tmp
+    rename to jmx_file_description;
+
+

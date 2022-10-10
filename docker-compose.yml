@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8093:8093"
+    command: "java  '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8093' -jar /opt/project/performance-platform-0.0.1-SNAPSHOT.jar"
